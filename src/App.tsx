@@ -38,6 +38,11 @@ export default function App() {
   const [rightAnswers, setRightAnswers] = useState<string[]>([])
   const [wrongAnswers, setWrongAnswers] = useState<string[]>([])
   const [mixedAnswers, setMixedAnswers] = useState<string[]>([])
+  const [count, setCount] = useState<number>(0)
+  const [finishedGame, setFinishedGame] = useState<boolean>(false)
+  const [timeLeft, setTimeLeft] = useState(5)
+  const [clickMeToContinue, setClickMeToContinue] =
+    useState<boolean>(false)
 
   function handlePlayerNameChange(event: {
     target: { value: React.SetStateAction<string> }
@@ -54,64 +59,111 @@ export default function App() {
     }
   }
 
-  useEffect(() => {
-    fetch(
-      `https://the-trivia-api.com/api/questions?limit=1&categories=${chosenCategory}&difficulty=${chosenDifficulty}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setResult(data)
-        setMixedAnswers([
-          ...data[0].incorrectAnswers,
-          data[0].correctAnswer,
-        ])
-        console.log(data)
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-  }, [chosenCategory, chosenDifficulty, rightAnswers, wrongAnswers])
-
-  const mixUpAnswers = () => {
-    const shuffledAnswers = mixedAnswers.sort(() => 0.5 - Math.random())
-    setMixedAnswers(shuffledAnswers.slice(0, 4))
-    // setMixedAnswers(mixedAnswers)
+  function continueToQuestions() {
     setContinueGame(true)
     setContinueGameFromOptions(false)
+    setClickMeToContinue(true)
   }
-  const handlePickCategories = () => {
-    const shuffledCategories = categories.sort(() => 0.5 - Math.random())
+
+  async function fetchQuestion() {
+    try {
+      const response = await fetch(
+        `https://the-trivia-api.com/api/questions?limit=1&categories=${chosenCategory}&difficulty=${
+          chosenDifficulty + pickedDifficulty
+        }`
+      )
+      if (!response.ok) {
+        throw new Error(response.statusText)
+      }
+      const data = await response.json()
+      setResult(data)
+      const answers = [...data[0].incorrectAnswers, data[0].correctAnswer]
+      const mixedAnswers = shuffleArray(answers)
+      setMixedAnswers(mixedAnswers)
+      console.log(data)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    }
+  }
+  useEffect(() => {
+    if (clickMeToContinue) {
+      const timer = setInterval(() => {
+        setTimeLeft((prevTimeLeft) => prevTimeLeft - 1)
+      }, 1000)
+      return () => clearInterval(timer)
+    }
+  }, [clickMeToContinue])
+
+  useEffect(() => {
+    if (timeLeft === 0) {
+      fetchQuestion()
+      setTimeLeft(5)
+    }
+  }, [timeLeft])
+
+  useEffect(() => {
+    fetchQuestion()
+  }, [
+    chosenCategory,
+    chosenDifficulty,
+    pickedDifficulty,
+    rightAnswers,
+    wrongAnswers,
+  ])
+
+  function shuffleArray(array: string[]) {
+    const shuffledArray = array.sort(() => 0.5 - Math.random())
+    return shuffledArray
+  }
+
+  function handlePickCategories() {
+    const shuffledCategories = shuffleArray(categories)
     const pickedCategories = shuffledCategories.slice(0, 3)
     setPickedCategories(pickedCategories)
   }
 
-  const handleChoseCategory = (category: string) => {
+  function handleChoseCategory(category: string) {
     setChosenCategory(category)
   }
 
-  const handlePickedDifficulty = () => {
-    const shuffledDifficulties = difficulty.sort(() => 0.5 - Math.random())
-    const pickedDifficulty = shuffledDifficulties.slice(0, 1).toString()
-    setPickedDifficulty(pickedDifficulty)
-    // setContinueGame(false)
+  function handlePickedDifficulty() {
+    if (chosenDifficulty) {
+      // setPickedDifficulty(chosenDifficulty)
+    } else {
+      const shuffledDifficulties = shuffleArray(difficulty)
+      const pickedDifficulty = shuffledDifficulties.slice(0, 1).toString()
+      setPickedDifficulty(pickedDifficulty)
+    }
   }
 
-  const handleChosenDifficulty = (difficulty: string) => {
+  function handleChosenDifficulty(difficulty: string) {
     setChosenDifficulty(difficulty)
-    // setContinueGame(false)
   }
-  const handleClick = (answer: string) => {
+
+  function handleClick(answer: string) {
+    setTimeLeft(5)
     if (answer === result[0].correctAnswer) {
       setRightAnswers([...rightAnswers, answer])
       // alert('Correct!')
     } else {
       setWrongAnswers([...wrongAnswers, answer])
-      alert('Incorrect!')
+      // alert('Incorrect!')
     }
-    mixUpAnswers()
   }
+
+  function handleGameRound() {
+    setCount(count + 1)
+    // Ändra till 8 sen brue
+    if (count === 23) {
+      setContinueGame(false)
+      setFinishedGame(true)
+      setClickMeToContinue(false)
+    }
+  }
+
   return (
     <div className="App">
+      <p>{timeLeft}</p>
       {hideNameInput && (
         <>
           <h1>Welcome to quiz game!</h1>
@@ -172,7 +224,13 @@ export default function App() {
               </button>
               <br />
               <p>------------------------</p>
-              <button onClick={mixUpAnswers}>Click me to continue!</button>
+              <button
+                onClick={() => {
+                  continueToQuestions()
+                }}
+              >
+                Click me to continue!
+              </button>
             </div>
           )}
         </div>
@@ -183,28 +241,40 @@ export default function App() {
           <p>{result[0].question}</p>
           <p>{result[0].correctAnswer}</p>
           <h3>Answers:</h3>
-          {mixedAnswers.map((answer) => (
+          {mixedAnswers.map((answer, index) => (
             <>
               <br />
               <button
+                key={index}
                 onClick={() => {
                   handleClick(answer)
+                  handlePickedDifficulty()
+                  handleGameRound()
                 }}
               >
                 {answer}
               </button>
             </>
           ))}
+          <p>Game Round: {count}</p>
           <div style={{ marginTop: '100px' }}>
             <p>----------------------------------------------------</p>
             <p style={{ fontSize: '19px', fontWeight: 'bold' }}>
               Chosen category: {chosenCategory}
             </p>
             <p style={{ fontSize: '19px', fontWeight: 'bold' }}>
-              Chosen difficulty: {chosenDifficulty}
+              Chosen difficulty: {chosenDifficulty}, {pickedDifficulty}
             </p>
           </div>
         </div>
+      )}
+      {finishedGame && (
+        <>
+          <h1>You finished the game!</h1>
+          <h3>Heres your results:</h3>
+          <p>You had {rightAnswers.length} right answer!</p>
+          <p>You had {wrongAnswers.length} wrong answers!</p>
+        </>
       )}
     </div>
   )
