@@ -29,20 +29,26 @@ export default function App() {
   const [playerName, setPlayerName] = useState<string>('')
   const [continueGameFromOptions, setContinueGameFromOptions] =
     useState<boolean>(false)
+  const [chooseCategoryIfRight, setChooseCategoryIfRight] =
+    useState<boolean>(false)
   const [continueGame, setContinueGame] = useState<boolean>(false)
   const [hideNameInput, setHideNameInput] = useState<boolean>(true)
   const [pickedCategories, setPickedCategories] = useState<string[]>([])
   const [chosenCategory, setChosenCategory] = useState<string>('')
   const [pickedDifficulty, setPickedDifficulty] = useState<string>('')
+  const [randomButtonClicked, setRandomButtonClicked] =
+    useState<boolean>(false)
   const [chosenDifficulty, setChosenDifficulty] = useState<string>('')
   const [rightAnswers, setRightAnswers] = useState<string[]>([])
   const [wrongAnswers, setWrongAnswers] = useState<string[]>([])
   const [mixedAnswers, setMixedAnswers] = useState<string[]>([])
   const [count, setCount] = useState<number>(0)
   const [finishedGame, setFinishedGame] = useState<boolean>(false)
-  const [timeLeft, setTimeLeft] = useState(5)
+  const [timeLeft, setTimeLeft] = useState<number>(50)
   const [clickMeToContinue, setClickMeToContinue] =
     useState<boolean>(false)
+  const [secDiffi, setSecDiffi] = useState<number>(0)
+  const [ifRightAnswer, setIfRightAnswer] = useState<boolean>(false)
 
   function handlePlayerNameChange(event: {
     target: { value: React.SetStateAction<string> }
@@ -85,31 +91,42 @@ export default function App() {
       console.error('Error fetching data:', error)
     }
   }
-  useEffect(() => {
-    if (clickMeToContinue) {
-      const timer = setInterval(() => {
-        setTimeLeft((prevTimeLeft) => prevTimeLeft - 1)
-      }, 1000)
-      return () => clearInterval(timer)
-    }
-  }, [clickMeToContinue])
-
-  useEffect(() => {
-    if (timeLeft === 0) {
-      fetchQuestion()
-      setTimeLeft(5)
-    }
-  }, [timeLeft])
 
   useEffect(() => {
     fetchQuestion()
+
+    if (clickMeToContinue && !ifRightAnswer) {
+      let timer = setInterval(() => {
+        setTimeLeft((prevTimeLeft) => prevTimeLeft - 1)
+      }, 1000)
+      if (ifRightAnswer) {
+        clearInterval(timer)
+      }
+      return () => clearInterval(timer)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    clickMeToContinue,
     chosenCategory,
     chosenDifficulty,
     pickedDifficulty,
     rightAnswers,
     wrongAnswers,
+    ifRightAnswer,
   ])
+
+  useEffect(() => {
+    if (randomButtonClicked === true && timeLeft === 0) {
+      fetchQuestion()
+      setTimeLeft(30)
+      handlePickedDifficulty()
+    } else if (timeLeft === 0 && clickMeToContinue) {
+      setContinueGame(true)
+      fetchQuestion()
+      setTimeLeft(30)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeLeft])
 
   function shuffleArray(array: string[]) {
     const shuffledArray = array.sort(() => 0.5 - Math.random())
@@ -128,7 +145,6 @@ export default function App() {
 
   function handlePickedDifficulty() {
     if (chosenDifficulty) {
-      // setPickedDifficulty(chosenDifficulty)
     } else {
       const shuffledDifficulties = shuffleArray(difficulty)
       const pickedDifficulty = shuffledDifficulties.slice(0, 1).toString()
@@ -141,13 +157,16 @@ export default function App() {
   }
 
   function handleClick(answer: string) {
-    setTimeLeft(5)
+    setTimeLeft(30)
     if (answer === result[0].correctAnswer) {
       setRightAnswers([...rightAnswers, answer])
-      // alert('Correct!')
+      setTimeLeft(3)
+      setChooseCategoryIfRight(true)
+      setContinueGame(false)
+      setIfRightAnswer(true)
     } else {
       setWrongAnswers([...wrongAnswers, answer])
-      // alert('Incorrect!')
+      setChooseCategoryIfRight(false)
     }
   }
 
@@ -163,7 +182,31 @@ export default function App() {
 
   return (
     <div className="App">
+      <p>Total: {secDiffi}</p>
       <p>{timeLeft}</p>
+      {chooseCategoryIfRight && (
+        <>
+          <h2>Piiiiick one category:</h2>
+          {pickedCategories.map((category) => (
+            <>
+              <ul key={category}>
+                <button
+                  key={category}
+                  value={chosenCategory}
+                  onClick={() => {
+                    handleChoseCategory(category)
+                    setChooseCategoryIfRight(false)
+                    setIfRightAnswer(false)
+                    setClickMeToContinue(true)
+                  }}
+                >
+                  {category}
+                </button>
+              </ul>
+            </>
+          ))}
+        </>
+      )}
       {hideNameInput && (
         <>
           <h1>Welcome to quiz game!</h1>
@@ -205,6 +248,7 @@ export default function App() {
                   </ul>
                 </>
               ))}
+
               <h2>Pick one difficulty:</h2>
               {difficulty.map((difficulty) => (
                 <>
@@ -219,7 +263,12 @@ export default function App() {
                   </ul>
                 </>
               ))}
-              <button onClick={handlePickedDifficulty}>
+              <button
+                onClick={() => {
+                  handlePickedDifficulty()
+                  setRandomButtonClicked(true)
+                }}
+              >
                 Random Difficulty
               </button>
               <br />
@@ -227,6 +276,7 @@ export default function App() {
               <button
                 onClick={() => {
                   continueToQuestions()
+                  setChooseCategoryIfRight(false)
                 }}
               >
                 Click me to continue!
