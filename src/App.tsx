@@ -44,7 +44,7 @@ export default function App() {
   const [mixedAnswers, setMixedAnswers] = useState<string[]>([])
   const [count, setCount] = useState<number>(0)
   const [finishedGame, setFinishedGame] = useState<boolean>(false)
-  const [timeLeft, setTimeLeft] = useState<number>(50)
+  const [timeLeft, setTimeLeft] = useState<number>(5)
   const [clickMeToContinue, setClickMeToContinue] =
     useState<boolean>(false)
   const [secDiffi, setSecDiffi] = useState<number>(0)
@@ -118,12 +118,15 @@ export default function App() {
   useEffect(() => {
     if (randomButtonClicked === true && timeLeft === 0) {
       fetchQuestion()
-      setTimeLeft(30)
+      setTimeLeft(5)
+      handleGameRound()
       handlePickedDifficulty()
-    } else if (timeLeft === 0 && clickMeToContinue) {
       setContinueGame(true)
+    } else if (timeLeft === 0 && clickMeToContinue) {
       fetchQuestion()
-      setTimeLeft(30)
+      handleGameRound()
+      setTimeLeft(5)
+      setContinueGame(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft])
