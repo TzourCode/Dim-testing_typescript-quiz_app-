@@ -47,8 +47,11 @@ export default function App() {
   const [timeLeft, setTimeLeft] = useState<number>(5)
   const [clickMeToContinue, setClickMeToContinue] =
     useState<boolean>(false)
-  const [secDiffi, setSecDiffi] = useState<number>(0)
   const [ifRightAnswer, setIfRightAnswer] = useState<boolean>(false)
+  const [calcSec, setCalcSec] = useState<number>(0)
+  const [totalSecDiffi, setTotalSecDiffi] = useState<number>(0)
+  const [totalSecDiffiQuestion, setTotalSecDiffiQuestion] =
+    useState<number>(0)
 
   function handlePlayerNameChange(event: {
     target: { value: React.SetStateAction<string> }
@@ -114,22 +117,49 @@ export default function App() {
     wrongAnswers,
     ifRightAnswer,
   ])
+  /* När man väljer svårighet funkar det det när det blir noll med att spara i Total sekunder * svårighetsgrad och när man väljer ett svar rätt eller.
+  Det är när man väljer random svårighet den inte sparar till Total sekunder * svårighetsgrad. */
 
+  // RANDOM
+  // Det verkar funka 04/22 när ja testa med random att den plussar och gångrar på, måste lägga mer än 5 sek så jag hinner kolla bara att den plussar och gångrar rätt.
+  // Den fortsätter även om valt rätt efter att man valt en kategori.
+
+  // När man väljer difficulty själv så gångrar den och plussar rätt men när man ska välja kategori efter man valt en rätt fråga så fortsätter sekunderna i minus. 04/22
+
+  /* Dety funkar inte för att handlepickdifficulty körs och calcsecleft
+  vill ha ett difficulty värde innan den körs */
   useEffect(() => {
-    if (randomButtonClicked === true && timeLeft === 0) {
-      fetchQuestion()
-      setTimeLeft(5)
-      handleGameRound()
+    if (timeLeft === 0 && randomButtonClicked) {
       handlePickedDifficulty()
+      // fetchQuestion()
       setContinueGame(true)
-    } else if (timeLeft === 0 && clickMeToContinue) {
-      fetchQuestion()
       handleGameRound()
       setTimeLeft(5)
-      setContinueGame(true)
+      calcSecLeft()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft])
+
+  // useEffect(() => {
+  //   if (timeLeft === 0 && continueGame) {
+  //     calcSecLeft()
+  //     fetchQuestion()
+  //     setContinueGame(true)
+  //     handleGameRound()
+  //     setTimeLeft(5)
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [timeLeft])
+
+  // useEffect(() => {
+  //   if (timeLeft === 0 && !ifRightAnswer) {
+  //     fetchQuestion()
+  //     setContinueGame(true)
+  //     handleGameRound()
+  //     setTimeLeft(5)
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [timeLeft])
 
   function shuffleArray(array: string[]) {
     const shuffledArray = array.sort(() => 0.5 - Math.random())
@@ -160,13 +190,14 @@ export default function App() {
   }
 
   function handleClick(answer: string) {
-    setTimeLeft(30)
     if (answer === result[0].correctAnswer) {
       setRightAnswers([...rightAnswers, answer])
       setTimeLeft(3)
       setChooseCategoryIfRight(true)
       setContinueGame(false)
       setIfRightAnswer(true)
+      handlePickCategories()
+      shuffleArray(pickedCategories)
     } else {
       setWrongAnswers([...wrongAnswers, answer])
       setChooseCategoryIfRight(false)
@@ -183,9 +214,39 @@ export default function App() {
     }
   }
 
+  /* Funkar nu när man lagt || or operatorn men plussar på efter att man
+  klickat på en kategori om man valt rätt */
+  function calcSecLeft() {
+    let totalSec = 5 - timeLeft
+    setCalcSec(totalSec)
+    if (chosenDifficulty === 'easy' || pickedDifficulty === 'easy') {
+      setTotalSecDiffi(calcSec * 1)
+      setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
+    } else if (
+      chosenDifficulty === 'medium' ||
+      pickedDifficulty === 'medium'
+    ) {
+      setTotalSecDiffi(calcSec * 3)
+      setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
+    } else if (
+      chosenDifficulty === 'hard' ||
+      pickedDifficulty === 'hard'
+    ) {
+      setTotalSecDiffi(calcSec * 5)
+      setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
+    }
+  }
+  useEffect(() => {
+    calcSecLeft()
+  }, [calcSec])
   return (
     <div className="App">
-      <p>Total: {secDiffi}</p>
+      <p>ClicktoContinue: {clickMeToContinue.toString()}</p>
+      <p>IfR: {ifRightAnswer.toString()}</p>
+      <p>Randombuttonclick: {randomButtonClicked.toString()}</p>
+      <p>Total sekunder * svårighetsgrad: {totalSecDiffiQuestion}</p>
+      <p>secdiff: {totalSecDiffi}</p>
+      <p>Sekunder kvar: {calcSec}</p>
       <p>{timeLeft}</p>
       {chooseCategoryIfRight && (
         <>
@@ -201,6 +262,7 @@ export default function App() {
                     setChooseCategoryIfRight(false)
                     setIfRightAnswer(false)
                     setClickMeToContinue(true)
+                    setTimeLeft(1)
                   }}
                 >
                   {category}
@@ -274,7 +336,6 @@ export default function App() {
               >
                 Random Difficulty
               </button>
-              <br />
               <p>------------------------</p>
               <button
                 onClick={() => {
@@ -303,6 +364,8 @@ export default function App() {
                   handleClick(answer)
                   handlePickedDifficulty()
                   handleGameRound()
+                  setTimeLeft(5)
+                  calcSecLeft()
                 }}
               >
                 {answer}
@@ -310,15 +373,12 @@ export default function App() {
             </>
           ))}
           <p>Game Round: {count}</p>
-          <div style={{ marginTop: '100px' }}>
-            <p>----------------------------------------------------</p>
-            <p style={{ fontSize: '19px', fontWeight: 'bold' }}>
-              Chosen category: {chosenCategory}
-            </p>
-            <p style={{ fontSize: '19px', fontWeight: 'bold' }}>
-              Chosen difficulty: {chosenDifficulty}, {pickedDifficulty}
-            </p>
-          </div>
+          <p style={{ fontSize: '19px', fontWeight: 'bold' }}>
+            Chosen category: {chosenCategory}
+          </p>
+          <p style={{ fontSize: '19px', fontWeight: 'bold' }}>
+            Chosen difficulty: {chosenDifficulty}, {pickedDifficulty}
+          </p>
         </div>
       )}
       {finishedGame && (
