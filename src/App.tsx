@@ -60,12 +60,8 @@ export default function App() {
   }
 
   function continueQuiz() {
-    if (typeof playerName === 'string' && playerName.length === 0) {
-      alert('Please type your name to continue with the game!🕹')
-    } else {
-      setContinueGameFromOptions(true)
-      setHideNameInput(false)
-    }
+    setContinueGameFromOptions(true)
+    setHideNameInput(false)
   }
 
   function continueToQuestions() {
@@ -89,15 +85,20 @@ export default function App() {
       const answers = [...data[0].incorrectAnswers, data[0].correctAnswer]
       const mixedAnswers = shuffleArray(answers)
       setMixedAnswers(mixedAnswers)
-      console.log(data)
+      setPickedDifficulty(pickedDifficulty)
+      // console.log('1:', data)
+      console.log('2:', data[0].difficulty)
+      console.log('3:', pickedDifficulty)
     } catch (error) {
       console.error('Error fetching data:', error)
     }
   }
+  // useEffect(() => {
+  //   fetchQuestion()
+  // }, [!continueToQuestions])
 
   useEffect(() => {
     fetchQuestion()
-
     if (clickMeToContinue && !ifRightAnswer) {
       let timer = setInterval(() => {
         setTimeLeft((prevTimeLeft) => prevTimeLeft - 1)
@@ -117,49 +118,38 @@ export default function App() {
     wrongAnswers,
     ifRightAnswer,
   ])
-  /* När man väljer svårighet funkar det det när det blir noll med att spara i Total sekunder * svårighetsgrad och när man väljer ett svar rätt eller.
-  Det är när man väljer random svårighet den inte sparar till Total sekunder * svårighetsgrad. */
+  /* När man väljer svårighet funkar det det när det blir noll med att spara i Total sekunder * svårighetsgrad och när man väljer ett svar rätt.
+  Det är när man väljer random svårighet den sparar till Total sekunder * svårighetsgrad fast med den andra fetch difficult värdet. */
 
-  // RANDOM
-  // Det verkar funka 04/22 när ja testa med random att den plussar och gångrar på, måste lägga mer än 5 sek så jag hinner kolla bara att den plussar och gångrar rätt.
-  // Den fortsätter även om valt rätt efter att man valt en kategori.
-
-  // När man väljer difficulty själv så gångrar den och plussar rätt men när man ska välja kategori efter man valt en rätt fråga så fortsätter sekunderna i minus. 04/22
-
-  /* Dety funkar inte för att handlepickdifficulty körs och calcsecleft
+  /* Det funkar inte för att handlepickdifficulty körs och calcsecleft
   vill ha ett difficulty värde innan den körs */
   useEffect(() => {
     if (timeLeft === 0 && randomButtonClicked) {
+      fetchQuestion()
+      setContinueGame(true)
+      handleGameRound()
+      setTimeLeft(5)
       handlePickedDifficulty()
-      // fetchQuestion()
+      calcSecLeft()
+      // alert('0')
+    } else if (timeLeft === 0 && !chooseCategoryIfRight) {
+      fetchQuestion()
       setContinueGame(true)
       handleGameRound()
       setTimeLeft(5)
       calcSecLeft()
+      // alert('1')
+    } else if (timeLeft === 0 && chooseCategoryIfRight) {
+      fetchQuestion()
+      setContinueGame(true)
+      handleGameRound()
+      setTimeLeft(5)
+      setChooseCategoryIfRight(false)
+      // calcSecLeft()
+      // alert('2')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft])
-
-  // useEffect(() => {
-  //   if (timeLeft === 0 && continueGame) {
-  //     calcSecLeft()
-  //     fetchQuestion()
-  //     setContinueGame(true)
-  //     handleGameRound()
-  //     setTimeLeft(5)
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [timeLeft])
-
-  // useEffect(() => {
-  //   if (timeLeft === 0 && !ifRightAnswer) {
-  //     fetchQuestion()
-  //     setContinueGame(true)
-  //     handleGameRound()
-  //     setTimeLeft(5)
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [timeLeft])
 
   function shuffleArray(array: string[]) {
     const shuffledArray = array.sort(() => 0.5 - Math.random())
@@ -192,7 +182,8 @@ export default function App() {
   function handleClick(answer: string) {
     if (answer === result[0].correctAnswer) {
       setRightAnswers([...rightAnswers, answer])
-      setTimeLeft(3)
+      // setTimeLeft(5)
+      setClickMeToContinue(false)
       setChooseCategoryIfRight(true)
       setContinueGame(false)
       setIfRightAnswer(true)
@@ -236,18 +227,43 @@ export default function App() {
       setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
     }
   }
+
+  // function calcSecLeft() {
+  //   let totalSec = 5 - timeLeft
+  //   setCalcSec(totalSec)
+
+  //   switch (chosenDifficulty || pickedDifficulty) {
+  //     case 'easy':
+  //       setTotalSecDiffi(calcSec * 1)
+  //       break
+  //     case 'medium':
+  //       setTotalSecDiffi(calcSec * 3)
+  //       break
+  //     case 'hard':
+  //       setTotalSecDiffi(calcSec * 5)
+  //       break
+  //     default:
+  //       break
+  //   }
+
+  //   setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
+  // }
+
   useEffect(() => {
     calcSecLeft()
   }, [calcSec])
   return (
     <div className="App">
-      <p>ClicktoContinue: {clickMeToContinue.toString()}</p>
+      {/* <p>{result[0].difficulty}</p> */}
+      <p>ChooseCategoryIfRight: {chooseCategoryIfRight.toString()}</p>
+      <p>ChoosenDifficulty: {chosenDifficulty}</p>
+      <p>ClickMeToContinue: {clickMeToContinue.toString()}</p>
       <p>IfR: {ifRightAnswer.toString()}</p>
       <p>Randombuttonclick: {randomButtonClicked.toString()}</p>
       <p>Total sekunder * svårighetsgrad: {totalSecDiffiQuestion}</p>
-      <p>secdiff: {totalSecDiffi}</p>
-      <p>Sekunder kvar: {calcSec}</p>
-      <p>{timeLeft}</p>
+      <p>TimeLeft: {timeLeft}</p>
+      {/* <p>secdiff: {totalSecDiffi}</p> */}
+      {/* <p>Sekunder kvar: {calcSec}</p> */}
       {chooseCategoryIfRight && (
         <>
           <h2>Piiiiick one category:</h2>
@@ -259,7 +275,7 @@ export default function App() {
                   value={chosenCategory}
                   onClick={() => {
                     handleChoseCategory(category)
-                    setChooseCategoryIfRight(false)
+                    // setChooseCategoryIfRight(false)
                     setIfRightAnswer(false)
                     setClickMeToContinue(true)
                     setTimeLeft(1)
@@ -275,7 +291,7 @@ export default function App() {
       {hideNameInput && (
         <>
           <h1>Welcome to quiz game!</h1>
-          <h3>Please type in your name to proceed.</h3>
+          <h3>Type in your name if you want!.</h3>
           <label>
             Player name:
             <input
@@ -341,6 +357,7 @@ export default function App() {
                 onClick={() => {
                   continueToQuestions()
                   setChooseCategoryIfRight(false)
+                  // fetchQuestion()
                 }}
               >
                 Click me to continue!
@@ -362,7 +379,7 @@ export default function App() {
                 key={index}
                 onClick={() => {
                   handleClick(answer)
-                  handlePickedDifficulty()
+                  // handlePickedDifficulty()
                   handleGameRound()
                   setTimeLeft(5)
                   calcSecLeft()
@@ -377,7 +394,8 @@ export default function App() {
             Chosen category: {chosenCategory}
           </p>
           <p style={{ fontSize: '19px', fontWeight: 'bold' }}>
-            Chosen difficulty: {chosenDifficulty}, {pickedDifficulty}
+            Chosen difficulty: {chosenDifficulty},<br />
+            PickedDifficulty: {pickedDifficulty}
           </p>
         </div>
       )}
