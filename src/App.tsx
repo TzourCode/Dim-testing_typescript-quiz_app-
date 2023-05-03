@@ -52,6 +52,9 @@ export default function App() {
   const [totalSecDiffi, setTotalSecDiffi] = useState<number>(0)
   const [totalSecDiffiQuestion, setTotalSecDiffiQuestion] =
     useState<number>(0)
+  const [rightGuesses, setRightGuesses] = useState<number>(0)
+
+  /*behövs inte ta bort sen*/ const [d, setd] = useState<string>('')
 
   function handlePlayerNameChange(event: {
     target: { value: React.SetStateAction<string> }
@@ -68,6 +71,7 @@ export default function App() {
     setContinueGame(true)
     setContinueGameFromOptions(false)
     setClickMeToContinue(true)
+    // fetchQuestion()
   }
 
   async function fetchQuestion() {
@@ -85,20 +89,20 @@ export default function App() {
       const answers = [...data[0].incorrectAnswers, data[0].correctAnswer]
       const mixedAnswers = shuffleArray(answers)
       setMixedAnswers(mixedAnswers)
-      setPickedDifficulty(pickedDifficulty)
-      // console.log('1:', data)
+      handlePickedDifficulty()
+      setd(data[0].difficulty)
       console.log('2:', data[0].difficulty)
       console.log('3:', pickedDifficulty)
     } catch (error) {
       console.error('Error fetching data:', error)
     }
   }
-  // useEffect(() => {
-  //   fetchQuestion()
-  // }, [!continueToQuestions])
-
   useEffect(() => {
     fetchQuestion()
+  }, [])
+
+  useEffect(() => {
+    // fetchQuestion()
     if (clickMeToContinue && !ifRightAnswer) {
       let timer = setInterval(() => {
         setTimeLeft((prevTimeLeft) => prevTimeLeft - 1)
@@ -118,19 +122,26 @@ export default function App() {
     wrongAnswers,
     ifRightAnswer,
   ])
-  /* När man väljer svårighet funkar det det när det blir noll med att spara i Total sekunder * svårighetsgrad och när man väljer ett svar rätt.
-  Det är när man väljer random svårighet den sparar till Total sekunder * svårighetsgrad fast med den andra fetch difficult värdet. */
 
-  /* Det funkar inte för att handlepickdifficulty körs och calcsecleft
-  vill ha ett difficulty värde innan den körs */
   useEffect(() => {
-    if (timeLeft === 0 && randomButtonClicked) {
-      fetchQuestion()
+    if (timeLeft === 0 && randomButtonClicked && !chooseCategoryIfRight) {
+      calcSecLeft()
       setContinueGame(true)
       handleGameRound()
       setTimeLeft(5)
-      handlePickedDifficulty()
-      calcSecLeft()
+      fetchQuestion()
+      // alert('0')
+    } else if (
+      timeLeft === 0 &&
+      randomButtonClicked &&
+      chooseCategoryIfRight
+    ) {
+      // calcSecLeft()
+      setContinueGame(true)
+      handleGameRound()
+      setTimeLeft(5)
+      fetchQuestion()
+      setChooseCategoryIfRight(false)
       // alert('0')
     } else if (timeLeft === 0 && !chooseCategoryIfRight) {
       fetchQuestion()
@@ -168,15 +179,16 @@ export default function App() {
 
   function handlePickedDifficulty() {
     if (chosenDifficulty) {
+      // setPickedDifficulty('')
     } else {
-      const shuffledDifficulties = shuffleArray(difficulty)
-      const pickedDifficulty = shuffledDifficulties.slice(0, 1).toString()
-      setPickedDifficulty(pickedDifficulty)
+      const shuffledArray = shuffleArray(difficulty)
+      setPickedDifficulty(shuffledArray[0])
     }
   }
 
   function handleChosenDifficulty(difficulty: string) {
     setChosenDifficulty(difficulty)
+    setPickedDifficulty('')
   }
 
   function handleClick(answer: string) {
@@ -189,9 +201,11 @@ export default function App() {
       setIfRightAnswer(true)
       handlePickCategories()
       shuffleArray(pickedCategories)
+      setRightGuesses(rightGuesses + 1)
     } else {
       setWrongAnswers([...wrongAnswers, answer])
       setChooseCategoryIfRight(false)
+      fetchQuestion()
     }
   }
 
@@ -205,14 +219,13 @@ export default function App() {
     }
   }
 
-  /* Funkar nu när man lagt || or operatorn men plussar på efter att man
-  klickat på en kategori om man valt rätt */
   function calcSecLeft() {
     let totalSec = 5 - timeLeft
     setCalcSec(totalSec)
     if (chosenDifficulty === 'easy' || pickedDifficulty === 'easy') {
       setTotalSecDiffi(calcSec * 1)
       setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
+      /*Plussa på med rightguesses också */
     } else if (
       chosenDifficulty === 'medium' ||
       pickedDifficulty === 'medium'
@@ -228,42 +241,19 @@ export default function App() {
     }
   }
 
-  // function calcSecLeft() {
-  //   let totalSec = 5 - timeLeft
-  //   setCalcSec(totalSec)
-
-  //   switch (chosenDifficulty || pickedDifficulty) {
-  //     case 'easy':
-  //       setTotalSecDiffi(calcSec * 1)
-  //       break
-  //     case 'medium':
-  //       setTotalSecDiffi(calcSec * 3)
-  //       break
-  //     case 'hard':
-  //       setTotalSecDiffi(calcSec * 5)
-  //       break
-  //     default:
-  //       break
-  //   }
-
-  //   setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
-  // }
-
   useEffect(() => {
     calcSecLeft()
   }, [calcSec])
   return (
     <div className="App">
-      {/* <p>{result[0].difficulty}</p> */}
-      <p>ChooseCategoryIfRight: {chooseCategoryIfRight.toString()}</p>
-      <p>ChoosenDifficulty: {chosenDifficulty}</p>
-      <p>ClickMeToContinue: {clickMeToContinue.toString()}</p>
-      <p>IfR: {ifRightAnswer.toString()}</p>
+      <p>R: {rightGuesses}</p>
+      <p>Pi: {pickedDifficulty}</p>
+      <p>D: {d}</p>
+      <p>choseDiffi: {chosenDifficulty}</p>
       <p>Randombuttonclick: {randomButtonClicked.toString()}</p>
+      <p>ChooseCategoryIfRight: {chooseCategoryIfRight.toString()}</p>
       <p>Total sekunder * svårighetsgrad: {totalSecDiffiQuestion}</p>
       <p>TimeLeft: {timeLeft}</p>
-      {/* <p>secdiff: {totalSecDiffi}</p> */}
-      {/* <p>Sekunder kvar: {calcSec}</p> */}
       {chooseCategoryIfRight && (
         <>
           <h2>Piiiiick one category:</h2>
