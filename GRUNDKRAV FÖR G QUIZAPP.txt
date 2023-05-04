@@ -42,23 +42,24 @@ Möjligheten att fylla I sitt player-name​ ✅
 
 Man startar med att välja en av tre slumpade kategorier.​ ✅
 
-Det ska finnas möjlighet att välja svårighetsgrad easy, medium, hard eller random där random väljer svårighetsgrad automatiskt för varje ny fråga.​
+Det ska finnas möjlighet att välja svårighetsgrad easy, medium, hard eller
+random där random väljer svårighetsgrad automatiskt för varje ny fråga.​ ✅
 
-Hittar apiet ingen fråga så ska den försöka igen tills den hittat något.​
+Hittar apiet ingen fråga så ska den försöka igen tills den hittat något.​ ✅
 
-Är trivia nere så ska användaren bli notifierad att tjänsten är nere.​
+Är trivia nere så ska användaren bli notifierad att tjänsten är nere.​✅
 
-En spelomgång ska innehålla 9 frågor​
+En spelomgång ska innehålla 9 frågor​ ✅
 
-För varje fråga så har spelarna 30 sekunder på sig att svara​
+För varje fråga så har spelarna 30 sekunder på sig att svara​ ✅
 
 Poäng sätts med ekvationen:​
+Sekunder som är kvar * svårighetsgrad (1 = easy, 3 = medium 5 = hard) ✅
++ antal gissade rätt * antal gissade I följd om man har minst 3 rätt I följd.​
 
-Sekunder som är kvar * svårighetsgrad (1 = easy, 3 = medium 5 = hard) + antal gissade rätt * antal gissade I följd om man har minst 3 rätt I följd.​
+Vinnaren av varje fråga får välja en av 3 slumpvisa kategorier av nästa fråga​ ✅
 
-Vinnaren av varje fråga får välja en av 3 slumpvisa kategorier av nästa fråga​
-
-När man valt en kategori så dyker nästa fråga upp efter 3 sekunders nedräkning​
+När man valt en kategori så dyker nästa fråga upp efter 3 sekunders nedräkning​ ✅
 
 När alla 9 frågorna är besvarade så presenteras totalpoäng​
 
@@ -68,7 +69,8 @@ UML – Klassdiagram finns som tydligt förklarar hur komponenterna sitter ihop�
 
 BDD test finns som testar en spelomgång​
 
-Enhetstester finns som täcker kraven och förväntas även att det finns tester som kan hantera uppenbara fel som nollor och null-värden.​
+Enhetstester finns som täcker kraven och förväntas även att det finns tester som kan
+hantera uppenbara fel som nollor och null-värden.​
 
 Du följer designprinciperna YAGNI, DRY, KISS ​
 

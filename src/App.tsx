@@ -53,6 +53,8 @@ export default function App() {
   const [totalSecDiffiQuestion, setTotalSecDiffiQuestion] =
     useState<number>(0)
   const [rightGuesses, setRightGuesses] = useState<number>(0)
+  const [totalSecDiffRightGuess, setTotalSecDiffRightGuess] =
+    useState<number>(0)
 
   /*behövs inte ta bort sen*/ const [d, setd] = useState<string>('')
 
@@ -138,26 +140,24 @@ export default function App() {
     ) {
       // calcSecLeft()
       setContinueGame(true)
-      handleGameRound()
       setTimeLeft(5)
       fetchQuestion()
       setChooseCategoryIfRight(false)
-      // alert('0')
+      // alert('1')
     } else if (timeLeft === 0 && !chooseCategoryIfRight) {
       fetchQuestion()
       setContinueGame(true)
       handleGameRound()
       setTimeLeft(5)
       calcSecLeft()
-      // alert('1')
+      // alert('2')
     } else if (timeLeft === 0 && chooseCategoryIfRight) {
       fetchQuestion()
       setContinueGame(true)
-      handleGameRound()
       setTimeLeft(5)
       setChooseCategoryIfRight(false)
       // calcSecLeft()
-      // alert('2')
+      // alert('3')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft])
@@ -212,10 +212,12 @@ export default function App() {
   function handleGameRound() {
     setCount(count + 1)
     // Ändra till 8 sen brue
-    if (count === 23) {
+    if (count === 2) {
       setContinueGame(false)
       setFinishedGame(true)
       setClickMeToContinue(false)
+      /*Den plussar inte på i slutet riktigt
+      setTotalSecDiffRightGuess(totalSecDiffiQuestion + rightGuesses)*/
     }
   }
 
@@ -225,19 +227,22 @@ export default function App() {
     if (chosenDifficulty === 'easy' || pickedDifficulty === 'easy') {
       setTotalSecDiffi(calcSec * 1)
       setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
-      /*Plussa på med rightguesses också */
+      /*Den plussar inte på i slutet riktigt*/
+      setTotalSecDiffRightGuess(totalSecDiffiQuestion + rightGuesses)
     } else if (
       chosenDifficulty === 'medium' ||
       pickedDifficulty === 'medium'
     ) {
       setTotalSecDiffi(calcSec * 3)
       setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
+      setTotalSecDiffRightGuess(totalSecDiffiQuestion + rightGuesses)
     } else if (
       chosenDifficulty === 'hard' ||
       pickedDifficulty === 'hard'
     ) {
       setTotalSecDiffi(calcSec * 5)
       setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
+      setTotalSecDiffRightGuess(totalSecDiffiQuestion + rightGuesses)
     }
   }
 
@@ -246,6 +251,7 @@ export default function App() {
   }, [calcSec])
   return (
     <div className="App">
+      {count}
       <p>R: {rightGuesses}</p>
       <p>Pi: {pickedDifficulty}</p>
       <p>D: {d}</p>
@@ -253,6 +259,7 @@ export default function App() {
       <p>Randombuttonclick: {randomButtonClicked.toString()}</p>
       <p>ChooseCategoryIfRight: {chooseCategoryIfRight.toString()}</p>
       <p>Total sekunder * svårighetsgrad: {totalSecDiffiQuestion}</p>
+      <p>RG: {rightGuesses}</p>
       <p>TimeLeft: {timeLeft}</p>
       {chooseCategoryIfRight && (
         <>
@@ -395,6 +402,7 @@ export default function App() {
           <h3>Heres your results:</h3>
           <p>You had {rightAnswers.length} right answer!</p>
           <p>You had {wrongAnswers.length} wrong answers!</p>
+          <p>Total: {totalSecDiffRightGuess}</p>
         </>
       )}
     </div>
