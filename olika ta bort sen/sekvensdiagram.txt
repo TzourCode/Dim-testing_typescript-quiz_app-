@@ -1,0 +1,26 @@
+sequenceDiagram
+    participant User
+    participant App
+    participant fetchQuestion
+
+    User->>+App: Interagerar med App-komponenten
+
+    App->>+fetchQuestion: Anropar fetchQuestion()
+
+    App->>fetchQuestion: Skickar en GET-begäran
+
+    fetchQuestion-->>-App: Returnerar data
+
+    App->>+App: Uppdaterar state-variablerna
+
+    App->>+App: Renderar resultaten
+
+    User->>+App: Interagerar med resultaten
+
+    loop Fråga och svar
+        User->>+App: Svarar på frågan
+        App->>+App: Kollar svaret
+        App->>+App: Uppdaterar state-variablerna
+        App->>+App: Kollar om spelet är över
+        App->>App: Renderar resultatet av spelet
+    end

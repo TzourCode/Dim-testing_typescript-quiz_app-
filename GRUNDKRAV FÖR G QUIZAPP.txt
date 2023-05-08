@@ -53,17 +53,17 @@ En spelomgång ska innehålla 9 frågor​ ✅
 
 För varje fråga så har spelarna 30 sekunder på sig att svara​ ✅
 
-Poäng sätts med ekvationen:​
-Sekunder som är kvar * svårighetsgrad (1 = easy, 3 = medium 5 = hard) ✅
-+ antal gissade rätt * antal gissade I följd om man har minst 3 rätt I följd.​
+Poäng sätts med ekvationen:​ ✅
+Sekunder som är kvar!!!!!! * svårighetsgrad (1 = easy, 3 = medium 5 = hard) ✅
++ antal gissade rätt ✅ * antal gissade I följd om man har minst 3 rätt I följd.​ ✅
 
 Vinnaren av varje fråga får välja en av 3 slumpvisa kategorier av nästa fråga​ ✅
 
 När man valt en kategori så dyker nästa fråga upp efter 3 sekunders nedräkning​ ✅
 
-När alla 9 frågorna är besvarade så presenteras totalpoäng​
+När alla 9 frågorna är besvarade så presenteras totalpoäng​ ✅
 
-UML – sekvensdiagram finns som tydligt förklarar flödet​
+UML – sekvensdiagram finns som tydligt förklarar flödet​ ✅
 
 UML – Klassdiagram finns som tydligt förklarar hur komponenterna sitter ihop​
 
@@ -74,7 +74,7 @@ hantera uppenbara fel som nollor och null-värden.​
 
 Du följer designprinciperna YAGNI, DRY, KISS ​
 
-Poängsystemet, antal frågor och tid per fråga vill man kunna modifiera med en config-fil​
+Poängsystemet????, antal frågor✅ och tid per fråga✅ vill man kunna modifiera med en config-fil​
 
 -------------------------------------------------
 INLÄMMNING

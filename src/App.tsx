@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './App.css'
+import config from './config.json'
 
 type resultProps = {
   id: string
@@ -44,19 +45,16 @@ export default function App() {
   const [mixedAnswers, setMixedAnswers] = useState<string[]>([])
   const [count, setCount] = useState<number>(0)
   const [finishedGame, setFinishedGame] = useState<boolean>(false)
-  const [timeLeft, setTimeLeft] = useState<number>(5)
+  const [timeLeft, setTimeLeft] = useState<number>(config.timeLeft)
   const [clickMeToContinue, setClickMeToContinue] =
     useState<boolean>(false)
   const [ifRightAnswer, setIfRightAnswer] = useState<boolean>(false)
-  const [calcSec, setCalcSec] = useState<number>(0)
+  const [longestStreak, setLongestStreak] = useState<number>(0)
+  const [finaleStreak, setFinaleStreak] = useState<number>(0)
   const [totalSecDiffi, setTotalSecDiffi] = useState<number>(0)
   const [totalSecDiffiQuestion, setTotalSecDiffiQuestion] =
     useState<number>(0)
-  const [rightGuesses, setRightGuesses] = useState<number>(0)
-  const [totalSecDiffRightGuess, setTotalSecDiffRightGuess] =
-    useState<number>(0)
-
-  /*behövs inte ta bort sen*/ const [d, setd] = useState<string>('')
+  const [totalScore, setTotalScore] = useState<number>(0)
 
   function handlePlayerNameChange(event: {
     target: { value: React.SetStateAction<string> }
@@ -73,7 +71,6 @@ export default function App() {
     setContinueGame(true)
     setContinueGameFromOptions(false)
     setClickMeToContinue(true)
-    // fetchQuestion()
   }
 
   async function fetchQuestion() {
@@ -92,19 +89,16 @@ export default function App() {
       const mixedAnswers = shuffleArray(answers)
       setMixedAnswers(mixedAnswers)
       handlePickedDifficulty()
-      setd(data[0].difficulty)
-      console.log('2:', data[0].difficulty)
-      console.log('3:', pickedDifficulty)
     } catch (error) {
       console.error('Error fetching data:', error)
     }
   }
   useEffect(() => {
     fetchQuestion()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    // fetchQuestion()
     if (clickMeToContinue && !ifRightAnswer) {
       let timer = setInterval(() => {
         setTimeLeft((prevTimeLeft) => prevTimeLeft - 1)
@@ -127,37 +121,29 @@ export default function App() {
 
   useEffect(() => {
     if (timeLeft === 0 && randomButtonClicked && !chooseCategoryIfRight) {
-      calcSecLeft()
       setContinueGame(true)
       handleGameRound()
-      setTimeLeft(5)
+      setTimeLeft(config.timeLeft)
       fetchQuestion()
-      // alert('0')
     } else if (
       timeLeft === 0 &&
       randomButtonClicked &&
       chooseCategoryIfRight
     ) {
-      // calcSecLeft()
       setContinueGame(true)
-      setTimeLeft(5)
+      setTimeLeft(config.timeLeft)
       fetchQuestion()
       setChooseCategoryIfRight(false)
-      // alert('1')
     } else if (timeLeft === 0 && !chooseCategoryIfRight) {
       fetchQuestion()
       setContinueGame(true)
       handleGameRound()
-      setTimeLeft(5)
-      calcSecLeft()
-      // alert('2')
+      setTimeLeft(config.timeLeft)
     } else if (timeLeft === 0 && chooseCategoryIfRight) {
       fetchQuestion()
       setContinueGame(true)
-      setTimeLeft(5)
+      setTimeLeft(config.timeLeft)
       setChooseCategoryIfRight(false)
-      // calcSecLeft()
-      // alert('3')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft])
@@ -179,7 +165,6 @@ export default function App() {
 
   function handlePickedDifficulty() {
     if (chosenDifficulty) {
-      // setPickedDifficulty('')
     } else {
       const shuffledArray = shuffleArray(difficulty)
       setPickedDifficulty(shuffledArray[0])
@@ -194,76 +179,77 @@ export default function App() {
   function handleClick(answer: string) {
     if (answer === result[0].correctAnswer) {
       setRightAnswers([...rightAnswers, answer])
-      // setTimeLeft(5)
       setClickMeToContinue(false)
       setChooseCategoryIfRight(true)
       setContinueGame(false)
       setIfRightAnswer(true)
       handlePickCategories()
       shuffleArray(pickedCategories)
-      setRightGuesses(rightGuesses + 1)
+      setLongestStreak(longestStreak + 1)
     } else {
       setWrongAnswers([...wrongAnswers, answer])
       setChooseCategoryIfRight(false)
       fetchQuestion()
+      setLongestStreak(0)
+    }
+  }
+
+  useEffect(() => {
+    if (longestStreak >= 3) {
+      setFinaleStreak(longestStreak)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [finishedGame, count])
+
+  function calcSecLeft() {
+    if (chosenDifficulty === 'easy' || pickedDifficulty === 'easy') {
+      setTotalSecDiffi(timeLeft * config.easy)
+      setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
+    } else if (
+      chosenDifficulty === 'medium' ||
+      pickedDifficulty === 'medium'
+    ) {
+      setTotalSecDiffi(timeLeft * config.medium)
+      setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
+    } else if (
+      chosenDifficulty === 'hard' ||
+      pickedDifficulty === 'hard'
+    ) {
+      setTotalSecDiffi(timeLeft * config.hard)
+      setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
     }
   }
 
   function handleGameRound() {
     setCount(count + 1)
-    // Ändra till 8 sen brue
-    if (count === 2) {
+    setTimeLeft(config.timeLeft)
+    if (count === config.numberOfQuestions) {
       setContinueGame(false)
       setFinishedGame(true)
       setClickMeToContinue(false)
-      /*Den plussar inte på i slutet riktigt
-      setTotalSecDiffRightGuess(totalSecDiffiQuestion + rightGuesses)*/
+      setChooseCategoryIfRight(false)
     }
   }
-
-  function calcSecLeft() {
-    let totalSec = 5 - timeLeft
-    setCalcSec(totalSec)
-    if (chosenDifficulty === 'easy' || pickedDifficulty === 'easy') {
-      setTotalSecDiffi(calcSec * 1)
-      setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
-      /*Den plussar inte på i slutet riktigt*/
-      setTotalSecDiffRightGuess(totalSecDiffiQuestion + rightGuesses)
-    } else if (
-      chosenDifficulty === 'medium' ||
-      pickedDifficulty === 'medium'
-    ) {
-      setTotalSecDiffi(calcSec * 3)
-      setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
-      setTotalSecDiffRightGuess(totalSecDiffiQuestion + rightGuesses)
-    } else if (
-      chosenDifficulty === 'hard' ||
-      pickedDifficulty === 'hard'
-    ) {
-      setTotalSecDiffi(calcSec * 5)
-      setTotalSecDiffiQuestion(totalSecDiffiQuestion + totalSecDiffi)
-      setTotalSecDiffRightGuess(totalSecDiffiQuestion + rightGuesses)
-    }
-  }
-
   useEffect(() => {
-    calcSecLeft()
-  }, [calcSec])
+    if (finaleStreak) {
+      setTotalScore(
+        (totalSecDiffiQuestion + totalSecDiffi + rightAnswers.length) *
+          finaleStreak
+      )
+    } else {
+      setTotalScore(
+        totalSecDiffiQuestion + totalSecDiffi + rightAnswers.length
+      )
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [finishedGame])
+
   return (
     <div className="App">
-      {count}
-      <p>R: {rightGuesses}</p>
-      <p>Pi: {pickedDifficulty}</p>
-      <p>D: {d}</p>
-      <p>choseDiffi: {chosenDifficulty}</p>
-      <p>Randombuttonclick: {randomButtonClicked.toString()}</p>
-      <p>ChooseCategoryIfRight: {chooseCategoryIfRight.toString()}</p>
-      <p>Total sekunder * svårighetsgrad: {totalSecDiffiQuestion}</p>
-      <p>RG: {rightGuesses}</p>
-      <p>TimeLeft: {timeLeft}</p>
       {chooseCategoryIfRight && (
         <>
-          <h2>Piiiiick one category:</h2>
+          <p>TimeLeft: {timeLeft}</p>
+          <h2>Pick one category:</h2>
           {pickedCategories.map((category) => (
             <>
               <ul key={category}>
@@ -272,10 +258,9 @@ export default function App() {
                   value={chosenCategory}
                   onClick={() => {
                     handleChoseCategory(category)
-                    // setChooseCategoryIfRight(false)
                     setIfRightAnswer(false)
                     setClickMeToContinue(true)
-                    setTimeLeft(1)
+                    setTimeLeft(config.timeLeftCategory)
                   }}
                 >
                   {category}
@@ -288,7 +273,7 @@ export default function App() {
       {hideNameInput && (
         <>
           <h1>Welcome to quiz game!</h1>
-          <h3>Type in your name if you want!.</h3>
+          <h3>Type in your name if you want to!.</h3>
           <label>
             Player name:
             <input
@@ -326,7 +311,6 @@ export default function App() {
                   </ul>
                 </>
               ))}
-
               <h2>Pick one difficulty:</h2>
               {difficulty.map((difficulty) => (
                 <>
@@ -354,7 +338,6 @@ export default function App() {
                 onClick={() => {
                   continueToQuestions()
                   setChooseCategoryIfRight(false)
-                  // fetchQuestion()
                 }}
               >
                 Click me to continue!
@@ -365,6 +348,8 @@ export default function App() {
       )}
       {continueGame && (
         <div>
+          <p>Game Round: {count}</p>
+          <p>TimeLeft: {timeLeft}</p>
           <h3>Question</h3>
           <p>{result[0].question}</p>
           <p>{result[0].correctAnswer}</p>
@@ -376,9 +361,7 @@ export default function App() {
                 key={index}
                 onClick={() => {
                   handleClick(answer)
-                  // handlePickedDifficulty()
                   handleGameRound()
-                  setTimeLeft(5)
                   calcSecLeft()
                 }}
               >
@@ -386,14 +369,6 @@ export default function App() {
               </button>
             </>
           ))}
-          <p>Game Round: {count}</p>
-          <p style={{ fontSize: '19px', fontWeight: 'bold' }}>
-            Chosen category: {chosenCategory}
-          </p>
-          <p style={{ fontSize: '19px', fontWeight: 'bold' }}>
-            Chosen difficulty: {chosenDifficulty},<br />
-            PickedDifficulty: {pickedDifficulty}
-          </p>
         </div>
       )}
       {finishedGame && (
@@ -402,7 +377,7 @@ export default function App() {
           <h3>Heres your results:</h3>
           <p>You had {rightAnswers.length} right answer!</p>
           <p>You had {wrongAnswers.length} wrong answers!</p>
-          <p>Total: {totalSecDiffRightGuess}</p>
+          <p>Totalscore: {totalScore}</p>
         </>
       )}
     </div>
