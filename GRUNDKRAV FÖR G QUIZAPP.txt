@@ -65,16 +65,16 @@ När alla 9 frågorna är besvarade så presenteras totalpoäng​ ✅
 
 UML – sekvensdiagram finns som tydligt förklarar flödet​ ✅
 
-UML – Klassdiagram finns som tydligt förklarar hur komponenterna sitter ihop​
+UML – Klassdiagram finns som tydligt förklarar hur komponenterna sitter ihop​ ✅
 
-BDD test finns som testar en spelomgång​
+BDD test finns som testar en spelomgång​✅ CUCUMBER KOLLA !!!!!!!!!!
 
 Enhetstester finns som täcker kraven och förväntas även att det finns tester som kan
 hantera uppenbara fel som nollor och null-värden.​
 
 Du följer designprinciperna YAGNI, DRY, KISS ​
 
-Poängsystemet????, antal frågor✅ och tid per fråga✅ vill man kunna modifiera med en config-fil​
+Poängsystemet✅, antal frågor✅ och tid per fråga✅ vill man kunna modifiera med en config-fil​✅
 
 -------------------------------------------------
 INLÄMMNING

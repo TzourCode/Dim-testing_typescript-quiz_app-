@@ -1,0 +1,49 @@
+Jag använde mig av Mermaid Live editor "https://mermaid.live/edit".
+
+Länk till diagrammet(bild):
+"https://mermaid.ink/svg/pako:eNqdVMtq20AU_ZVhVi2xjF5WYi0CgaalZNW42QRtJtK1LaR5dGZk6hov-yfOL-QH9GO5GgUnfjQ4FQiGe88598ld0VwWQFNq4FcDIocvJZtpxjNB8FNM2zIvFROW3BnQh9YrpQ6NU7D5_EcDxpZSZKIHdHzv8vIMGSn5LixoNsNfEw5FJ-NVkispAD1bTmdGyo5eSq6ElhhuN8ynz7ukPc6kKvMKOSDIt-uf3gPM2o1m20A7aA_pnkvzFmyjhcuyYJbtpeUgd0qhy0GMxYe3YLpkDzVocRR_C6JwaA2mqTvGaR06hNdSKvJVt48zRmQ-JwYj954DsQm6UEe1j2TqCOIV-Da5G1nXXSEIB3sc8n6974hKToyCGizBzpP2aQF6H_-PBlnCFi_cnoGIoz27qfshd3VmdGJxJbE1PKNeJZhS_7lXZNo-acKs7QruFbfZfHzjXtXm7YajmliyfihSn76NR0hvW97-xQkZ225qnMsH99IVaSpMlp-4mnsMOqAcNGdlgWdl1fEzaufAIaMpPgumq4xmYo041lg5WYqcplY3MKCN262XE0TTKasNWvGm0HRFf9M0DMbDIPaD-CKMx-dBGEUDuqRpPPSTMBnF5_FoHCZJGK8H9I-UqBAMfT9KQjSP4sgPoih0cvfO2cVcPwOnWLSK"
+
+--------------------------------------------------------------------
+
+sequenceDiagram
+    participant User
+    participant App
+    participant fetchQuestion
+
+    User->>+App: Interagerar med App-komponenten
+
+    App->>+fetchQuestion: Anropar fetchQuestion()
+
+    App->>fetchQuestion: Skickar en GET-begäran
+
+    fetchQuestion-->>-App: Returnerar data
+
+    App->>+App: Uppdaterar state-variablerna
+
+    App->>+App: Renderar resultaten
+
+    User->>+App: Interagerar med resultaten
+
+    loop Fråga och svar
+        User->>+App: Svarar på frågan
+        App->>+App: Kollar svaret
+        App->>+App: Uppdaterar state-variablerna
+        App->>+App: Kollar om spelet är över
+        App->>App: Renderar resultatet av spelet
+    end
+
+    User->>+App: Klickar på "Starta om"-knappen
+
+    App->>+fetchQuestion: Anropar fetchQuestion() för att starta om spelet
+
+    App->>fetchQuestion: Skickar en GET-begäran för att hämta nya frågor
+
+    fetchQuestion-->>-App: Returnerar nya frågor
+
+    App->>+App: Återställer state-variablerna
+
+    App->>+App: Renderar startskärmen
+
+    User->>+App: Interagerar med startskärmen
+
+-------------------------------------------------------------------------

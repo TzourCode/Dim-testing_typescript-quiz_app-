@@ -1,0 +1,67 @@
+classDiagram
+App --> resultProps
+App --> config
+App --> categories
+App --> difficulty
+class App {
+-result: resultProps[]
+-playerName: string
+-continueGameFromOptions: boolean
+-chooseCategoryIfRight: boolean
+-continueGame: boolean
+-hideNameInput: boolean
+-pickedCategories: string[]
+-chosenCategory: string
+-pickedDifficulty: string
+-randomButtonClicked: boolean
+-chosenDifficulty: string
+-rightAnswers: string[]
+-wrongAnswers: string[]
+-mixedAnswers: string[]
+-count: number
+-finishedGame: boolean
+-timeLeft: number
+-clickMeToContinue: boolean
+-ifRightAnswer: boolean
+-longestStreak: number
+-finaleStreak: number
+-totalSecDiffi: number
+-totalSecDiffiQuestion: number
+-totalScore: number
++handlePlayerNameChange(event: Event) : void
++continueQuiz(): void
++continueToQuestions(): void
++fetchQuestion(): Promise<void>
+}
+
+class config {
+    -timeLeft: number
+}
+
+class resultProps {
+    -id: string
+    -question: string
+    -category: string
+    -difficulty: string
+    -correctAnswer: string
+    -incorrectAnswers: string[]
+}
+
+class categories {
+    -arts_and_literature: string
+    -film_and_tv: string
+    -food_and_drink: string
+    -general_knowledge: string
+    -geography: string
+    -history: string
+    -music: string
+    -science: string
+    -society_and_culture: string
+    -sport_and_leisure: string
+}
+
+class difficulty {
+    -easy: string
+    -medium: string
+    -hard: string
+}

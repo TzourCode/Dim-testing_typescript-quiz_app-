@@ -1,3 +1,13 @@
+# INLÄMMNING
+
+Vilka tester som använts​: Jag har använt ett BDD test och två unit tester.
+
+Teststrategier som använts​: BDD, Component tests (React testing library)
+
+Vart UML-Diagramen finns​: Dem finns innen i projektmappen i mappen Diagram.
+
+Designprinciperna du använt​: Jag
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

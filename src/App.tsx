@@ -244,6 +244,16 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [finishedGame])
 
+  function resetGame() {
+    setHideNameInput(true)
+    setFinishedGame(false)
+    setPlayerName('')
+    setCount(0)
+    setTotalSecDiffiQuestion(0)
+    setTotalScore(0)
+    setTotalSecDiffi(0)
+  }
+
   return (
     <div className="App">
       {chooseCategoryIfRight && (
@@ -273,7 +283,9 @@ export default function App() {
       {hideNameInput && (
         <>
           <h1>Welcome to quiz game!</h1>
-          <h3>Type in your name if you want to!.</h3>
+          <h3>
+            Type in your name if you want to, and lets start the game!.
+          </h3>
           <label>
             Player name:
             <input
@@ -352,7 +364,6 @@ export default function App() {
           <p>TimeLeft: {timeLeft}</p>
           <h3>Question</h3>
           <p>{result[0].question}</p>
-          <p>{result[0].correctAnswer}</p>
           <h3>Answers:</h3>
           {mixedAnswers.map((answer, index) => (
             <>
@@ -378,6 +389,13 @@ export default function App() {
           <p>You had {rightAnswers.length} right answer!</p>
           <p>You had {wrongAnswers.length} wrong answers!</p>
           <p>Totalscore: {totalScore}</p>
+          <button
+            onClick={() => {
+              resetGame()
+            }}
+          >
+            Wanna play a new game?
+          </button>
         </>
       )}
     </div>
