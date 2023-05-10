@@ -1,3 +1,10 @@
+Jag använde mig av Mermaid Live editor "https://mermaid.live/edit".
+
+Länk till diagrammet(bild):
+"https://mermaid.ink/img/pako:eNp1VWtP2zAU_SuRP4HWor4p0YTEyjYhbTwGn7ZMyNg3idXYN7MdoCD--5yEpk5S8qXxOdfnPnzcvBKGHEhIWEaNORc00VRG6izPg-HwNNBgisxea8zNDmSoYpF4a2ohQS3Ai-EijgVzezeRqqSDknmN1LCWDH3pP38dnmd0A_qSSggDY7VQLsPQpbJCFfDdwd80yqvcClQmDB4QM6CqDEkRDazqGjYX8S-RpLYV4Gn4eCo4lOkuVF60NuSCrYGvmq629VRlunQG1DadV2q967zp26M0VRzll8JaVKusiut04CT37yybOVPmCXS7jCeNKtlHSPEMfB_BsFCuTVXIB9BuHQslTAq8OxYrJPyA2A9lZc0_4Q5X76P040U98TqlT2SuQjD21mqg63ZimkEPtmhpdgusmsNH-E3hFJ0DejxDDTvwU-omnsF1Y6mVAxI4gEcoZ_C1_DkMwuARBXfRW4fcFOLl4LAH3-E2rfHYGCxLt0SJOytLYeBzyZ9G6i1SW-vXF6Z0f-CePROu4HpxFTfJOvwH27bwzpItGqjpQhK4KGQHTKnmO8gr3runTQeC7zxaAf-ac2nBrHdNKpjvsXodj1oDa7zU4oRqsS1z-7Nurm1TLdXW3DtD3GfCgqa20NDRjkUmqwj72GUQecVwB647ZALK6WX3a4VPGfAEejy6v9M87baZCmP7U5GFEayDGSZAsa6uQQfbTVVXOcZ-QyZHbeueQZgW781qdw7NrGq7tOt6t0u7hcouniYZEAlaUsHdx6RSi4hNQUJEQvfKqV5HxEW6OFpYvN0oRkKrCxiQIufu0N6_PSSMaWYcmlNFwlfyTMLxZHG0mC7nx9PxdLZYjpbzAdmQcDgZTY9Gi8nkeDmbjKfz8fJtQF4QncT4aLw8Gc3Hk-PRbDk7mcymld7viiyTvv0H0K16Uw?type=png"
+
+--------------------------------------------------------
+
 classDiagram
 App --> resultProps
 App --> config
@@ -36,6 +43,12 @@ class App {
 
 class config {
     -timeLeft: number
+    -numberOfQuestions: number
+    -timeLeft: number
+    -timeLeftCategory: number
+    -easy: number
+    -medium: number
+    -hard: number
 }
 
 class resultProps {
@@ -65,3 +78,4 @@ class difficulty {
     -medium: string
     -hard: string
 }
+--------------------------------------------------------------

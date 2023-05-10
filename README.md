@@ -1,12 +1,14 @@
 # INLÄMMNING
 
+Mitt Gherkin scenario är i src/ mappen game_rounds.feature.
+
 Vilka tester som använts​: Jag har använt ett BDD test och två unit tester.
 
-Teststrategier som använts​: BDD, Component tests (React testing library)
+Teststrategier som använts​: BDD (jest-cucumber), Enhetstester (React testing library)
 
 Vart UML-Diagramen finns​: Dem finns innen i projektmappen i mappen Diagram.
 
-Designprinciperna du använt​: Jag
+Designprinciperna du använt​: Jag har försökt gå efter DRY principen.
 
 # Getting Started with Create React App
 
@@ -19,15 +21,18 @@ In the project directory, you can run:
 ### `npm start`
 
 Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:3000] to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `npm test`
+### `npm test and npm run test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the BDD jest-cucumber test.
+
+### `npm run test-react`
+
+Launches the unit test with react-testing/library.
 
 ### `npm run build`
 
