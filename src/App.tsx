@@ -55,6 +55,8 @@ export default function App() {
   const [totalSecDiffiQuestion, setTotalSecDiffiQuestion] =
     useState<number>(0)
   const [totalScore, setTotalScore] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [l, setL] = useState<string>('')
 
   function handlePlayerNameChange(event: {
     target: { value: React.SetStateAction<string> }
@@ -91,6 +93,9 @@ export default function App() {
       handlePickedDifficulty()
     } catch (error) {
       console.error('Error fetching data:', error)
+      setLoading(true)
+      setHideNameInput(false)
+      setL('Funkar ej, försök igen senare.')
     }
   }
   useEffect(() => {
@@ -233,13 +238,10 @@ export default function App() {
   useEffect(() => {
     if (finaleStreak) {
       setTotalScore(
-        (totalSecDiffiQuestion + totalSecDiffi + rightAnswers.length) *
-          finaleStreak
+        totalSecDiffiQuestion + rightAnswers.length * finaleStreak
       )
     } else {
-      setTotalScore(
-        totalSecDiffiQuestion + totalSecDiffi + rightAnswers.length
-      )
+      setTotalScore(totalSecDiffiQuestion + rightAnswers.length)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [finishedGame])
@@ -360,6 +362,7 @@ export default function App() {
       )}
       {continueGame && (
         <div>
+          <p>Streaks: {finaleStreak}</p>
           <p>Game Round: {count}</p>
           <p>TimeLeft: {timeLeft}</p>
           <h3>Question</h3>
@@ -380,8 +383,13 @@ export default function App() {
               </button>
             </>
           ))}
+          <p>--------------------------------------</p>
+          <p>
+            Picked Difficulty: {pickedDifficulty} {chosenDifficulty}
+          </p>
         </div>
       )}
+      {loading && <h1>Trivia: {l}</h1>}
       {finishedGame && (
         <>
           <h1>You finished the game!</h1>
