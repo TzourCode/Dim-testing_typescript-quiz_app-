@@ -1,5 +1,7 @@
 # INLÄMMNING
 
+Mina Diagram är i Quiz-App mappen.
+
 Mitt Gherkin scenario är i src/ mappen game_rounds.feature.
 
 Vilka tester som använts​: Jag har använt ett BDD test och två unit tester.
