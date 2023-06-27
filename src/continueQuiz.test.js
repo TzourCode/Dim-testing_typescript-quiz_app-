@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import App from "./App";
 import userEvent from "@testing-library/user-event";
 import { wait } from "@testing-library/user-event/dist/utils";
+
 describe("App", () => {
   it("updates the player name when typed into the input", () => {
     render(<App />);
@@ -65,8 +66,42 @@ describe("App", () => {
   it("renders question headline", async () => {
     render(<App />);
     await wait(() => {
-      const questions = screen.getByLabelText("Question");
+      const questions = screen.getByText("Question");
       expect(questions).toBeInTheDocument();
+    });
+  });
+
+  it("should iterate through all questions and perform desired tests", () => {
+    render(<App />);
+
+    const questionElements = screen.queryAllByText("Question");
+
+    for (let i = 0; i < questionElements.length; i++) {
+      const questionElement = questionElements[i];
+
+      expect(questionElement).toBeInTheDocument();
+
+      const answerElements = screen.queryAllByClassName("answer");
+
+      for (let i = 0; i < answerElements.length; i++) {
+        const answerElement = answerElements[i];
+
+        expect(answerElement).toBeInTheDocument();
+        fireEvent.click(answerElement);
+
+        const nextQuestionElement = screen.queryByText("Question");
+        expect(nextQuestionElement).toBeInTheDocument();
+      }
+    }
+  });
+  it("it should see the text 'You finished the game!' after all questions has been answered", async () => {
+    render(<App />);
+
+    await wait(() => {
+      const gameCompletionMessage = screen.queryByText(
+        "You finished the game!"
+      );
+      expect(gameCompletionMessage).toBeInTheDocument();
     });
   });
 });
