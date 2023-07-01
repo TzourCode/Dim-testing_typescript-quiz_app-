@@ -194,22 +194,11 @@ export default function App() {
   }, [finishedGame, count]);
 
   function calcSecLeft() {
-    if (pickedDifficulty === "easy") {
-      setTotalSecDiffiQuestion(
-        (prevTotalSecDiffiQuestion) =>
-          prevTotalSecDiffiQuestion + timeLeft * config.easy
-      );
-    } else if (pickedDifficulty === "medium") {
-      setTotalSecDiffiQuestion(
-        (prevTotalSecDiffiQuestion) =>
-          prevTotalSecDiffiQuestion + timeLeft * config.medium
-      );
-    } else if (pickedDifficulty === "hard") {
-      setTotalSecDiffiQuestion(
-        (prevTotalSecDiffiQuestion) =>
-          prevTotalSecDiffiQuestion + timeLeft * config.hard
-      );
-    }
+    setTotalSecDiffiQuestion(
+      (prevTotalSecDiffiQuestion) =>
+        prevTotalSecDiffiQuestion +
+        timeLeft * config[pickedDifficulty as keyof typeof config]
+    );
   }
 
   function handleGameRound() {
